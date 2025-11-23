@@ -1,3 +1,6 @@
 pandas
 plotly
 matplotlib
+dash
+dash-bootstrap-components
+kaleido
