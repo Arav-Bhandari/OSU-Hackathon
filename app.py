@@ -1,12 +1,11 @@
 import dash
-from dash import dcc, html, Input, Output, State, callback
+from dash import dcc, html, Input, Output, State, callback, ctx
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 import plotly.express as px
+import plotly.io as pio
 from src.services import data_service
 import pandas as pd
-import base64
-from io import BytesIO
 
 app = dash.Dash(
     __name__,
@@ -435,6 +434,43 @@ def export_data(n_clicks, restaurant, calorie_range):
         df = df[df['restaurant'] == restaurant]
     df = df[(df['calories'] >= calorie_range[0]) & (df['calories'] <= calorie_range[1])]
     return dcc.send_data_frame(df.to_csv, "nutrition_data.csv", index=False)
+
+
+@callback(
+    Output("download-png", "data"),
+    [Input('download-scatter-btn', 'n_clicks'),
+     Input('download-bar-btn', 'n_clicks'),
+     Input('download-radar-btn', 'n_clicks'),
+     Input('download-items-btn', 'n_clicks'),
+     Input('download-ternary-btn', 'n_clicks')],
+    [State('scatter-plot', 'figure'),
+     State('bar-chart', 'figure'),
+     State('radar-chart', 'figure'),
+     State('items-chart', 'figure'),
+     State('ternary-chart', 'figure')],
+    prevent_initial_call=True
+)
+def export_graph_png(scatter_clicks, bar_clicks, radar_clicks, items_clicks, ternary_clicks,
+                     scatter_fig, bar_fig, radar_fig, items_fig, ternary_fig):
+    if not ctx.triggered_id:
+        return None
+    
+    figure_map = {
+        'download-scatter-btn': (scatter_fig, 'nutrition_scatter.png'),
+        'download-bar-btn': (bar_fig, 'restaurant_rankings.png'),
+        'download-radar-btn': (radar_fig, 'nutrition_radar.png'),
+        'download-items-btn': (items_fig, 'item_rankings.png'),
+        'download-ternary-btn': (ternary_fig, 'macronutrient_ternary.png')
+    }
+    
+    if ctx.triggered_id in figure_map:
+        fig_data, filename = figure_map[ctx.triggered_id]
+        if fig_data:
+            fig = go.Figure(fig_data)
+            img_bytes = pio.to_image(fig, format='png', width=1200, height=800, engine='kaleido')
+            return dcc.send_bytes(img_bytes, filename)
+    
+    return None
 
 
 if __name__ == '__main__':

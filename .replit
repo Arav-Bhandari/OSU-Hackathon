@@ -16,22 +16,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Run Analysis"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Dashboard Server"
-
-[[workflows.workflow]]
-name = "Run Analysis"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[workflows.workflow]]
 name = "Dashboard Server"
