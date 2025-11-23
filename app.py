@@ -41,6 +41,11 @@ navbar = dbc.Navbar(
 stats = data_service.get_stats()
 restaurant_scores = data_service.get_restaurant_scores()
 
+welcome_alert = dbc.Alert([
+    html.H5([html.I(className="fas fa-info-circle me-2"), "Welcome to the Fast Food Nutrition Dashboard"], className="alert-heading"),
+    html.P("Explore nutritional data from 8 major fast food restaurants. Use the filters below to customize your view, then click on the tabs to see different visualizations and analyses.", className="mb-0")
+], color="info", className="mb-4")
+
 stats_cards = dbc.Row([
     dbc.Col(dbc.Card([
         dbc.CardBody([
@@ -69,22 +74,24 @@ stats_cards = dbc.Row([
 ], className="mb-4")
 
 controls_panel = dbc.Card([
-    dbc.CardHeader(html.H5([html.I(className="fas fa-sliders-h me-2"), "Filters & Controls"])),
+    dbc.CardHeader(html.H5([html.I(className="fas fa-sliders-h me-2"), "Customize Your View"])),
     dbc.CardBody([
         dbc.Row([
             dbc.Col([
-                html.Label("Select Restaurants:", className="fw-bold"),
+                html.Label([html.I(className="fas fa-store me-1"), "Restaurant"], className="fw-bold mb-2"),
+                html.Small("Filter by specific restaurant or view all", className="text-muted d-block mb-2"),
                 dcc.Dropdown(
                     id='restaurant-filter',
                     options=[{'label': 'All Restaurants', 'value': 'ALL'}] + 
                             [{'label': r, 'value': r} for r in data_service.get_restaurants()],
                     value='ALL',
                     multi=False,
-                    className="mb-3"
+                    placeholder="Choose a restaurant..."
                 ),
             ], md=4),
             dbc.Col([
-                html.Label("Calorie Range:", className="fw-bold"),
+                html.Label([html.I(className="fas fa-fire me-1"), "Calorie Range"], className="fw-bold mb-2"),
+                html.Small("Filter items by calorie content", className="text-muted d-block mb-2"),
                 dcc.RangeSlider(
                     id='calorie-slider',
                     min=0,
@@ -94,49 +101,56 @@ controls_panel = dbc.Card([
                     marks={
                         0: '0',
                         500: '500',
-                        1000: '1000',
-                        1500: '1500',
-                        2000: '2000+',
+                        1000: '1k',
+                        1500: '1.5k',
+                        2000: '2k+',
                     },
                     tooltip={"placement": "bottom", "always_visible": True}
                 ),
             ], md=4),
             dbc.Col([
-                html.Label("Nutrient Focus:", className="fw-bold"),
+                html.Label([html.I(className="fas fa-chart-line me-1"), "Nutrient Focus"], className="fw-bold mb-2"),
+                html.Small("Choose which nutrient to analyze", className="text-muted d-block mb-2"),
                 dcc.Dropdown(
                     id='nutrient-selector',
                     options=[
-                        {'label': 'Protein', 'value': 'protein'},
-                        {'label': 'Sodium', 'value': 'sodium'},
-                        {'label': 'Saturated Fat', 'value': 'saturated_fat'},
-                        {'label': 'Sugars', 'value': 'sugars'},
-                        {'label': 'Fiber', 'value': 'fiber'},
+                        {'label': '💪 Protein', 'value': 'protein'},
+                        {'label': '🧂 Sodium', 'value': 'sodium'},
+                        {'label': '🥓 Saturated Fat', 'value': 'saturated_fat'},
+                        {'label': '🍬 Sugars', 'value': 'sugars'},
+                        {'label': '🌾 Fiber', 'value': 'fiber'},
                     ],
                     value='protein',
-                    className="mb-3"
+                    placeholder="Select a nutrient..."
                 ),
             ], md=4),
-        ]),
+        ], className="mb-3"),
+        html.Hr(),
         dbc.Row([
             dbc.Col([
-                dbc.Button([html.I(className="fas fa-sync me-2"), "Reset Filters"], 
-                          id='reset-btn', color="secondary", size="sm", className="me-2"),
-                dbc.Button([html.I(className="fas fa-download me-2"), "Export Data"], 
+                html.Small("💡 Tip: All charts update automatically when you change filters. Click the download icon on any chart to save it as PNG.", 
+                          className="text-muted")
+            ], md=8),
+            dbc.Col([
+                dbc.Button([html.I(className="fas fa-sync me-2"), "Reset"], 
+                          id='reset-btn', color="secondary", outline=True, size="sm", className="me-2"),
+                dbc.Button([html.I(className="fas fa-file-csv me-2"), "Export CSV"], 
                           id='export-btn', color="primary", size="sm"),
-            ], className="text-end"),
+            ], md=4, className="text-end"),
         ]),
     ])
 ], className="mb-4 shadow-sm")
 
 tabs = dbc.Tabs([
-    dbc.Tab(label="Overview Dashboard", tab_id="tab-overview", label_style={"cursor": "pointer"}),
-    dbc.Tab(label="Restaurant Comparison", tab_id="tab-comparison", label_style={"cursor": "pointer"}),
-    dbc.Tab(label="Item Analysis", tab_id="tab-items", label_style={"cursor": "pointer"}),
-    dbc.Tab(label="Nutrition Explorer", tab_id="tab-explorer", label_style={"cursor": "pointer"}),
+    dbc.Tab(label="📊 Overview", tab_id="tab-overview", label_style={"cursor": "pointer"}),
+    dbc.Tab(label="🔍 Compare Restaurants", tab_id="tab-comparison", label_style={"cursor": "pointer"}),
+    dbc.Tab(label="📋 Top Items", tab_id="tab-items", label_style={"cursor": "pointer"}),
+    dbc.Tab(label="🧪 Advanced Analysis", tab_id="tab-explorer", label_style={"cursor": "pointer"}),
 ], id="tabs", active_tab="tab-overview", className="mb-3")
 
 app.layout = dbc.Container([
     navbar,
+    welcome_alert,
     stats_cards,
     controls_panel,
     tabs,
@@ -474,4 +488,4 @@ def export_graph_png(scatter_clicks, bar_clicks, radar_clicks, items_clicks, ter
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)

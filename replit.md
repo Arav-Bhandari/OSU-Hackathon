@@ -68,9 +68,15 @@ Server automatically binds to 0.0.0.0:5000 for Replit compatibility.
   - Removed legacy CLI workflow
   - Modern, responsive UI with Font Awesome icons
   - Data export to CSV functionality
+  - Disabled debug mode to remove Plotly development widgets
+  - Added welcome message with usage instructions
+  - Improved UI intuitiveness with descriptive labels, helper text, and emojis
+  - Enhanced filter controls with clear explanations
+  - Added helpful tips for users
 
 ## User Preferences
-- Prefers modern, clean UI
+- Prefers modern, clean UI without debug widgets
+- Wants intuitive, user-friendly interface with clear instructions
 - Wants interactive controls with automatic graph updates
 - Needs PNG export functionality for all visualizations
 - Wants comprehensive analysis with multiple formulas and metrics
