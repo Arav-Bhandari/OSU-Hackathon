@@ -2,6 +2,8 @@
 import plotly.express as px
 import plotly.graph_objects as go
 from data_loader import load_data
+import matplotlib.pyplot as plt
+
 
 def ternary_plot(df):
     # Calculate macronutrient calories
